@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сократитель ссылок</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
+</head>
+<body>
+<header th:if="${uuid != null}">
+    <a th:href="'/lk/'+ ${uuid}" >🔗 Мои ссылки</a>
+</header>
+
+
+<div class="container">
+    <h2>Сократитель ссылок</h2>
+    <form th:action="@{/shorten}" method="post" class="form-group">
+        <!-- Ввод URL -->
+        <label for="url-input">Введите ссылку:</label>
+        <input type="url" id="url-input" name="url" placeholder="Введите URL для сокращения" th:value="${url}" required>
+        <br>
+
+        <!-- Выбор даты с использованием flatpickr -->
+        <label for="expiration-date">Дата окончания (опционально):</label>
+        <input type="date" id="expiration-date" name="expDate" th:value="${expDate}">
+        <small>Если не указано, ссылка будет вечной</small>
+        <br>
+
+        <!-- Кнопка отправки -->
+        <button type="submit">✂️ Сократить</button>
+    </form>
+
+    <!-- Вывод сгенерированной короткой ссылки -->
+    <div id="result-container" class="result-container">
+        <p>Ваша сокращённая ссылка:</p>
+        <div id="result" class="result-box" onclick="copyToClipboard()">
+            <span id="short-url"></span>
+            <span class="copy-tooltip">Скопировать</span>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+<script th:src="@{/js/script.js}"></script>
+<script th:src="@{/js/copy.js}"></script>
+<script th:src="@{/js/calendar.js}"></script>
+</body>
+</html>

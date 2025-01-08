@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ваши сокращения</title>
+    <link rel="stylesheet" th:href="@{/css/style-lk.css}">
+</head>
+<body>
+
+<header>
+    ✂️ Список ваших сокращений ✂️
+</header>
+
+<!-- Хлебные крошки -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Ваши сокращения</li>
+    </ol>
+</nav>
+
+<div class="container">
+    <!-- Цикл для отображения карточек -->
+    <div class="card"
+         th:each="link, stat : ${links}"
+         th:id="'card' + ${stat.index + 1}"
+         th:classappend="${link.expired} ? 'card-expired' : ''">
+
+        <div class="card-header">
+            <h3 th:text="${stat.index + 1}">1</h3>
+            <button class="btn-edit"
+                    th:data-id="${link.getId()}"
+                    th:data-token="${link.getToken()}"
+                    th:data-url="${link.getUrl()}"
+                    th:data-deadline="${link.getDeadLineDate()}"
+                    th:data-limit="${link.getCount()}"
+                    title="Редактировать"
+                    onclick="openModalFromButton(this)">📝</button>
+
+            <!-- Кнопка удаления с использованием AJAX -->
+            <button class="btn-delete"
+                    th:onclick="'deleteLink(' + ${link.getId()} + ', this)'"
+                    title="Удалить">
+                🗑️
+            </button>
+        </div>
+
+        <div class="link-section">
+            <p>
+                <strong>✂️ </strong>
+                <a th:href="'http://127.0.0.1:8080/' + ${link.getToken()}"
+                   th:text="${link.getToken()}">
+                </a>
+            </p>
+
+            <!-- Дата дедлайна -->
+            <p class="deadline">
+                <strong>☠️⏳ </strong>
+                <span th:text="${link.getDeadLineDate() ?: 'Бессрочно'}"></span>
+            </p>
+
+            <!-- Если ссылка просрочена, выведем предупреждение -->
+            <p th:if="${link.expired}" style="color: #ff6868; font-weight: bold;">
+                ⚠️ Ссылка истекла!
+            </p>
+
+            <p class="limit-views">
+                <strong>👀 </strong>
+                <span th:text="${link.getCount() ?: 0}"></span>
+            </p>
+            <p class="limit-views">
+                <strong>🔒 </strong>
+                <span th:text="${link.getLimitCross() ?: 0}"></span>
+            </p>
+
+            <p class="limit-views">
+                <strong>было создано </strong>
+                <span th:text="${link.getStartDate()}"></span>
+            </p>
+
+            <!-- Перенесли Rocket-кнопку в самый низ (после всех параграфов) -->
+            <!-- Показываем, если не просрочена -->
+            <div class="link-action" th:if="${!link.expired}">
+                <a class="btn-full-link" th:href="${link.getUrl()}" target="_blank">🚀</a>
+            </div>
+
+            <!-- Альтернативный вариант, если просрочено -->
+            <div class="link-action" th:if="${link.expired}">
+                <button class="btn-full-link disabled" disabled>Недоступно</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Модальное окно (Edit) -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Edit Link</h2>
+            <button class="modal-close" onclick="closeModal()">Close</button>
+        </div>
+        <div class="modal-body">
+            <label for="shortenedUrl">Токен:</label>
+            <input type="text" id="shortenedUrl" class="modal-input">
+
+            <label for="fullUrl">URL:</label>
+            <input type="text" id="fullUrl" class="modal-input">
+
+            <label for="deadline">Дедлайн:</label>
+            <input type="date" id="deadline" class="modal-input">
+
+            <label for="views">Лимит:</label>
+            <input type="number" id="views" class="modal-input">
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button" onclick="saveChanges()">Провести</button>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/delete.js}"></script>
+<script th:src="@{/js/modal.js}"></script>
+
+</body>
+</html>
